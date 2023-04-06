@@ -22,8 +22,9 @@ public class RandomAccessBenchmark {
     @State(Scope.Benchmark)
     public static class CaseState {
 
-        @Param({"true", "false"})
-        boolean randomAccess;
+
+        @Param({"FIXED", "LINER", "RANDOM"})
+        AccessMode accessMode;
 
         int nextIndex;
 
@@ -42,11 +43,16 @@ public class RandomAccessBenchmark {
 
         @Setup(Level.Invocation)
         public void beforeEach() {
-            if (randomAccess) {
-                nextIndex = ThreadLocalRandom.current().nextInt(arrayList.size());
-//                nextIndex = (nextIndex + 1) % 2000;
-            } else {
-                nextIndex = 127;
+            switch (accessMode) {
+                case FIXED:
+                    nextIndex = 127;
+                    break;
+                case LINER:
+                    nextIndex = (nextIndex + 1) % arrayList.size();
+                    break;
+                case RANDOM:
+                    nextIndex = ThreadLocalRandom.current().nextInt(arrayList.size());
+                    break;
             }
         }
     }
